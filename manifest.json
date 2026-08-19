@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Auto Reject Cookies",
+  "version": "1.0.0",
+  "description": "Automatically rejects/declines cookie consent banners on every site so browsing isn't interrupted.",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "all_frames": true,
+      "match_about_blank": true,
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Auto Reject Cookies"
+  }
+}
