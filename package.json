@@ -1,0 +1,14 @@
+{
+  "name": "additional-cookies-auto-reject",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Local tests and packaging for the Auto Reject Cookies extension",
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "test:unit": "node --test tests/background.test.cjs tests/rules.test.cjs tests/popup.test.cjs tests/packaging.test.cjs",
+    "check": "node scripts/check.cjs",
+    "package": "node scripts/package.cjs"
+  },
+  "engines": { "node": ">=22" },
+  "devDependencies": { "playwright": "1.64.1" }
+}
