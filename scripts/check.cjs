@@ -65,8 +65,8 @@ function checkRepository(root = path.resolve(__dirname, "..")) {
     assert.ok(typeof provider.id === "string" && provider.id.length > 0, "Providers need IDs");
     assert.ok(!ids.has(provider.id), `Duplicate provider ID: ${provider.id}`);
     ids.add(provider.id);
-    for (const field of ["roots", "reject", "manage", "save"]) {
-      if (provider[field] === undefined && (field === "manage" || field === "save")) continue;
+    for (const field of ["roots", "reject", "manage", "save", "ignoreUncheckedToggles"]) {
+      if (provider[field] === undefined && !["roots", "reject"].includes(field)) continue;
       assert.ok(Array.isArray(provider[field]) && provider[field].length > 0, `${provider.id}: missing ${field} selectors`);
       assert.ok(provider[field].every((selector) => typeof selector === "string" && selector.trim()), `${provider.id}: invalid ${field} selector`);
     }

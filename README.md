@@ -58,6 +58,6 @@ npm run package
 
 On Linux CI, install the browser dependencies with `npx playwright install --with-deps chromium`. `npm run test:unit` runs the non-browser tests. Browser tests load the real unpacked extension in an isolated Chromium profile and use local fixtures, including third-party frames and closed shadow roots. They do not establish a measured success rate across the live web.
 
-The ZIP is written to `dist/auto-reject-cookies-2.0.0.zip`. Packaging uses an explicit allowlist, so tests, development dependencies, and local files are excluded. GitHub Actions runs validation, tests, and packaging and makes the ZIP available as a workflow artifact.
+The ZIP is written to `dist/auto-reject-cookies-2.0.1.zip`. Packaging uses an explicit allowlist, so tests, development dependencies, and local files are excluded. GitHub Actions runs validation, tests, and packaging and makes the ZIP available as a workflow artifact.
 
 To contribute a missed banner, include the public URL, browser version, consent language, and which controls are offered. Redact personal information. Add a regression fixture with any new rule, verify its actual reject semantics against provider documentation or source, and retain the guards against accidental acceptance.

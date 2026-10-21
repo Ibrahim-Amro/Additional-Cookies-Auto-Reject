@@ -155,11 +155,14 @@
       el.tagName === 'INPUT' ? '' : el.innerText || el.textContent || '',
       ...[...(el.labels || [])].map(label => label.innerText || label.textContent)].map(normalize).filter(Boolean);
     const labels = [...directLabels];
+    const directCategory = directLabels.some(text => necessaryLabels.has(text) || optionalLabels.has(text));
     let row = el.parentElement;
     for (let i = 0; row && i < 3; i++, row = row.parentElement) {
       if (query(row, TOGGLE).length > 1) break;
       const rowText = normalize(row.innerText || row.textContent || '');
-      if (rowText.length <= 500) labels.push(rowText);
+      // An explanatory paragraph such as "If you do not allow these cookies"
+      // does not invert an explicitly named positive category switch.
+      if (!directCategory && rowText.length <= 500) labels.push(rowText);
       for (const heading of query(row, 'h2, h3, h4, h5, legend, [class*="title" i], [class*="heading" i]')) labels.push(normalize(heading.textContent || ''));
     }
     // Only exact positive category labels carry semantics. IDs and names cannot
@@ -179,8 +182,17 @@
     if (!toggles.length || toggles.length > 100 || state.changes >= 100 || query(container, 'input[type="radio"], [role="radio"]').length) return false;
     let optional = 0;
     for (const el of toggles) {
+      const ariaChecked = el.getAttribute('aria-checked');
+      if (el.indeterminate || ariaChecked === 'mixed') return false;
+      const utilityPanel = provider?.id === 'onetrust' ? el.closest('#ot-pc-lst') : null;
+      if (el.tagName === 'INPUT' && el.type === 'checkbox' && !el.checked &&
+          utilityPanel && container.contains(utilityPanel) && !visible(utilityPanel) &&
+          !el.hasAttribute('data-optanongroupid') && !el.hasAttribute('data-purposeid') &&
+          (ariaChecked === null || ariaChecked === 'false') && !el.closest('.line-through') &&
+          (provider?.ignoreUncheckedToggles || []).some(selector => el.matches(selector)) &&
+          !visible(el) && ![...(el.labels || [])].some(visible)) continue;
       const category = toggleCategory(el);
-      if (el.indeterminate || !category) return false;
+      if (!category) return false;
       if (category === 'necessary') continue;
       optional++;
       const checked = el.tagName === 'INPUT' ? el.checked : el.getAttribute('aria-checked') === 'true';

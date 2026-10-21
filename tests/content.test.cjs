@@ -275,3 +275,58 @@ for (const subject of ['Do you consent to the medical procedure?', 'Please revie
     assert.equal(await page.locator('[role="dialog"]').isVisible(), true);
   });
 }
+
+function oneTrustPreferences(utilityMarkup, root = 'onetrust-pc-sdk', listAttrs = 'style="display:none"', checked = '') {
+  return banner(`<div class="category"><h4 id="performance-title">Performance cookies</h4>
+    <div><input type="checkbox" id="performance" aria-labelledby="performance-title" ${checked} onchange="events.push('toggle')"><label for="performance">Performance cookies</label></div>
+    <p>If you do not allow these cookies, we will not know when you visited.</p></div>
+    <div id="ot-pc-lst" ${listAttrs}>${utilityMarkup}</div>
+    <button class="save-preference-btn-handler" onclick="events.push('save');this.closest('section').hidden=true">Confirm my choices</button>`, `id="${root}" role="dialog"`);
+}
+const utilityTemplates = '<input id="chkbox-id" class="category-filter-handler" type="checkbox"><label for="chkbox-id">checkbox label</label>' +
+  ['hosts-groups', 'vendor-groups', 'vendor-leg'].map(kind => `<input id="select-all-${kind}-handler" type="checkbox"><label for="select-all-${kind}-handler">checkbox label</label>`).join('');
+
+test('OneTrust saves necessary-only preferences despite inactive hidden list templates', async () => {
+  await load(oneTrustPreferences(utilityTemplates));
+  await page.waitForFunction(() => events.includes('save'));
+  assert.deepEqual(await getEvents(), ['save']);
+});
+
+test('positive category labels remain valid when descriptions explain not allowing cookies', async () => {
+  await load(oneTrustPreferences(utilityTemplates, 'onetrust-pc-sdk', 'style="display:none"', 'checked'));
+  await page.waitForFunction(() => events.includes('save'));
+  assert.deepEqual(await getEvents(), ['toggle', 'save']);
+  assert.equal(await page.locator('#performance').isChecked(), false);
+});
+
+for (const [name, markup, listAttrs = 'style="display:none"', root = 'onetrust-pc-sdk'] of [
+  ['checked master', '<input id="select-all-hosts-groups-handler" type="checkbox" checked>'],
+  ['mixed ARIA master', '<input id="select-all-hosts-groups-handler" type="checkbox" aria-checked="mixed">'],
+  ['ARIA true master', '<input id="select-all-hosts-groups-handler" type="checkbox" aria-checked="true">'],
+  ['partial selection class', '<span class="line-through"><input id="select-all-hosts-groups-handler" type="checkbox"></span>'],
+  ['unknown hidden control', '<input id="unrecognized-checkbox" type="checkbox">'],
+  ['non-native control', '<div id="select-all-hosts-groups-handler" role="checkbox" aria-checked="false"></div>'],
+  ['real purpose metadata', '<input id="select-all-hosts-groups-handler" type="checkbox" data-purposeid="7">'],
+  ['visible list control', '<input id="select-all-hosts-groups-handler" type="checkbox"><label for="select-all-hosts-groups-handler">checkbox label</label>', ''],
+  ['same ID outside OneTrust', '<input id="select-all-hosts-groups-handler" type="checkbox">', 'style="display:none"', 'cookie-preferences'],
+  ['unhidden list with invisible input', '<input style="opacity:0" id="select-all-hosts-groups-handler" type="checkbox">', ''],
+]) {
+  test(`OneTrust template exception leaves unsafe or unknown state unresolved: ${name}`, async () => {
+    await load(oneTrustPreferences(markup, root, listAttrs));
+    await quiet();
+    assert.deepEqual(await getEvents(), []);
+    assert.equal(await page.locator('section').isVisible(), true);
+  });
+}
+
+test('OneTrust hidden template with a visible associated label still blocks saving', async () => {
+  await load(oneTrustPreferences('<input id="select-all-hosts-groups-handler" type="checkbox">') + '<label for="select-all-hosts-groups-handler">Unclassified choice</label>');
+  await quiet();
+  assert.deepEqual(await getEvents(), []);
+});
+
+test('native checkbox with mixed ARIA state cannot be saved as optional-off', async () => {
+  await load(banner('<label><input type="checkbox" aria-checked="mixed">Analytics cookies</label><button onclick="events.push(\'save\')">Save preferences</button>'));
+  await quiet();
+  assert.deepEqual(await getEvents(), []);
+});

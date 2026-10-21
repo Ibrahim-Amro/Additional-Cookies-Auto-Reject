@@ -10,7 +10,12 @@
       roots: ['#onetrust-banner-sdk', '#onetrust-pc-sdk'],
       reject: ['#onetrust-reject-all-handler', '.ot-pc-refuse-all-handler'],
       manage: ['#onetrust-pc-btn-handler'],
-      save: ['.save-preference-btn-handler']
+      save: ['.save-preference-btn-handler'],
+      // Inactive hidden filter/master templates are not category selections.
+      // Checked, mixed, visible or unknown controls must still block saving.
+      ignoreUncheckedToggles: ['input#chkbox-id.category-filter-handler',
+        'input#select-all-hosts-groups-handler', 'input#select-all-vendor-groups-handler',
+        'input#select-all-vendor-leg-handler']
     },
     {
       id: 'cookiebot',
@@ -312,7 +317,7 @@
   }
 
   for (const provider of providers) {
-    for (const field of ['roots', 'reject', 'manage', 'save']) {
+    for (const field of ['roots', 'reject', 'manage', 'save', 'ignoreUncheckedToggles']) {
       if (provider[field]) Object.freeze(provider[field]);
     }
     Object.freeze(provider);

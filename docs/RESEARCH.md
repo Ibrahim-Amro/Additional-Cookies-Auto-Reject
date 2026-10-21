@@ -73,6 +73,16 @@ The [IAB TCF CMP API specification](https://github.com/InteractiveAdvertisingBur
 
 ## Validation interpretation and maintenance
 
+### AtkinsRéalis careers verification, 21 October 2026
+
+The public [Systems Engineering Industrial Year Placement page](https://careers.atkinsrealis.com/en/jobs/systems-engineering-industrial-year-placement-pl-192) uses OneTrust. Its [English consent configuration](https://cdn.cookielaw.org/consent/a43f3bf8-cde3-4228-8962-4b9de2c54c71/019ed5be-2e96-7494-9b41-36f04ffa3a5b/en.json) disables both banner and preference-center Reject All buttons. The working route is **Cookies settings → optional categories off → Confirm my choices**.
+
+Version 2.0.0 opened preferences but did not save because hidden Cookie List templates contained four unclassified checkbox placeholders. Version 2.0.1 ignores only the reviewed native unchecked, nonmixed templates inside OneTrust's hidden `#ot-pc-lst`, with hidden associated labels and no category/purpose metadata. Checked, mixed, visible, partially selected, or unfamiliar controls still prevent saving. The [vendor SDK 202609.2.0](https://cdn.cookielaw.org/scripttemplates/202609.2.0/otBannerSdk.js) was inspected: select-all controls can change consent, so the extension never clicks these templates or treats them as proof of vendor refusal. It also distinguishes explicit category names from explanatory paragraphs that say “If you do not allow these cookies”.
+
+In a disposable desktop Chrome profile in the UK, the updated extension clicked Cookies settings and Confirm my choices without clicking an acceptance control. The banner and preference center disappeared. The site's `OptanonConsent` changed from interaction count 0 to 1, retained `C0001:1` (strictly necessary), and recorded `C0003:0`, `C0002:0`, `C0004:0` (functional, performance, targeting). `OptanonAlertBoxClosed` was set. The refusal survived a reload with automation paused. Fourteen regression cases cover the compatibility path and its safety boundaries.
+
+This live check applies to the observed English configuration and browser session. It does not prove that third-party cookies already present were erased, that every regional variant works, or that the site's network activity honors consent. Existing third-party cookies can remain; this extension records the site's available refusal choice rather than deleting cookies.
+
 The repository's automated checks exercise syntax, rule shape, settings behavior and controlled DOM scenarios. These are regression checks for the implementation. Synthetic fixtures cannot prove the continuing behavior of hosted CMPs, which can vary with region, account settings, experiment assignment and vendor releases. Manual review should include fresh browser profiles, preference-center transitions, frames, open shadow roots, and confirmation that no acceptance action fires.
 
 For a new provider rule, record the primary source, scope selectors to the visible provider UI, trace the actual handler, and add a controlled fixture containing both acceptance and refusal controls. Prefer an explicitly named refusal action. If the action is ambiguous, keep the interface untouched and retain the language fallback until there is stronger evidence.
