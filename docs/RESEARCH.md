@@ -1,12 +1,12 @@
 # Research and coverage notes
 
-Research date: 17 October 2026. This document distinguishes source inspection from browser testing. It does **not** claim that the extension has been tested on every deployment of any vendor, or that a successful UI click proves that a website stops tracking.
+Initial research: 17 October 2026; expanded on 24 October 2026 in [Expanded coverage](EXPANDED-COVERAGE.md). This document distinguishes source inspection from browser testing. It does **not** claim that the extension has been tested on every deployment of any vendor, or that a successful UI click proves that a website stops tracking.
 
 ## Objective and limits
 
 The extension expresses the user's rejection of optional cookies through the consent interface exposed by the website. Necessary cookies, including session/login cookies and the cookie recording refusal, may remain. A browser content script cannot guarantee that every website honors consent, remove all server-side tracking, or prevent cookies already set before a banner appears. Cookie removal and consent rejection are different operations.
 
-Coverage combines explicit provider selectors with exact multilingual action labels inside a qualified cookie interface. There are 19 provider records: CookieYes has separate modern and legacy records; Osano's hosted CMP and original open-source CookieConsent have different interfaces. These are compatibility rules, not measured success percentages.
+Coverage combines explicit provider selectors with exact multilingual action labels inside a qualified cookie interface. The original 19 provider records listed below are expanded to 34 in version 2.1.0. CookieYes and OrestBida have separate modern and legacy records; Osano's hosted CMP and original open-source CookieConsent have different interfaces. These are compatibility rules, not measured success percentages.
 
 ## Method
 
@@ -52,8 +52,8 @@ Provider rules handle configured text independently of these phrases when the se
 
 - **Close is not refusal.** OneTrust, iubenda, Cookie Notice and other configurations demonstrate materially different close semantics. The extension must not hide or delete banners as a substitute for submitting a choice.
 - **Button position/style is not semantics.** No `:first-child`, generic secondary-button selector, or button-color heuristic determines refusal. Quantcast layouts can use secondary buttons for different actions, so no broad secondary selector was included.
-- **Numeric Sourcepoint classes are not a universal refusal signal.** Sourcepoint choice classes depend on message configuration. No blanket `.sp_choice_type_11` rule was added. Sourcepoint and Quantcast can still be handled when a qualified cookie interface exposes exact refusal wording.
-- **Other CMPs are not automatically covered by name.** TrustArc, Termly, Cookie-Script, older Borlabs, new Usercentrics templates and heavily customized CMPs require additional source-verified selectors or can use the conservative language fallback. Merely identifying a vendor is not evidence that a specific decline selector works.
+- **Sourcepoint action classes must be verified.** Version 2.1.0 uses the vendor's documented rejection classes `sp_choice_type_13` and `sp_choice_type_REJECT_ALL`. `sp_choice_type_11` is acceptance. Sourcepoint choices use only verified action selectors: custom JavaScript, dismissal, subscription and legitimate-interest-only choices are not guessed from labels. See [the expansion evidence](EXPANDED-COVERAGE.md).
+- **Other CMPs are not automatically covered by name.** Quantcast, older Borlabs, new Usercentrics templates and heavily customized CMPs still require matching source-verified selectors or the conservative language fallback. The expansion adds specific TrustArc, Termly and CookieScript interfaces, not every generation of those vendors.
 - **A disabled or ambiguous interface is left to the user.** Accept-only banners, pay-or-consent flows, browser-internal pages, inaccessible frames, closed shadow roots, and interfaces requiring trusted physical input may remain. The extension does not bypass paywalls or purchase alternatives.
 - **Necessary-only consent still permits necessary cookies.** The browser does not provide a universal way to determine whether every website's category assignment is honest or technically accurate.
 

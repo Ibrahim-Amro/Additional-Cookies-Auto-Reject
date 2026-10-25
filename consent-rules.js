@@ -134,12 +134,232 @@
       id: 'borlabs',
       roots: ['.brlbs-cmpnt-dialog', '.brlbs-cmpnt-dialog-box', '.brlbs-cmpnt-dialog-box-plus', '.brlbs-cmpnt-dialog-bar', '.brlbs-cmpnt-dialog-iab-tcf'],
       reject: ['.brlbs-btn-accept-only-essential']
+    },
+    {
+      id: 'sourcepoint',
+      roots: ['.sp_message_container', '.sp_message', '[class*="sp_choice_type_"]'],
+      reject: ['.sp_choice_type_13', '.sp_choice_type_REJECT_ALL'],
+      strictActions: true,
+      accept: ['.sp_choice_type_11', '.sp_choice_type_ACCEPT_ALL'],
+      manage: ['.sp_choice_type_12'],
+      save: ['.sp_choice_type_SAVE_AND_EXIT', '.sp_choice_type_SE']
+    },
+    {
+      "id": "cookiescript",
+      "roots": [
+        ".cookiescript_injected",
+        ".cookiescript_fsd_wrapper",
+        "#cookiescript_injected",
+        "#cookiescript_injected_fsd"
+      ],
+      "reject": [
+        "#cookiescript_reject"
+      ],
+      "accept": [
+        "#cookiescript_accept"
+      ],
+      "manage": [
+        "#cookiescript_manage"
+      ],
+      "save": [
+        "#cookiescript_save"
+      ]
+    },
+    {
+      "id": "termly",
+      "roots": [
+        "[data-termly-part=\"consent-banner\"]",
+        ".t-preference-modal"
+      ],
+      "reject": [
+        "[data-tid=\"banner-decline\"]",
+        ".t-declineAllButton"
+      ],
+      "accept": [
+        "[data-tid=\"banner-accept\"]",
+        ".t-allowAllButton"
+      ],
+      "save": [
+        ".t-saveButton"
+      ]
+    },
+    {
+      "id": "trustarc",
+      "roots": [
+        "#truste-consent-track"
+      ],
+      "reject": [
+        "#truste-consent-required"
+      ],
+      "accept": [
+        "#truste-consent-button"
+      ],
+      "manage": [
+        "#truste-show-consent"
+      ]
+    },
+    {
+      "id": "cookie-information",
+      "roots": [
+        "#coi-banner-wrapper"
+      ],
+      "reject": [
+        "[data-testid=\"coi-banner__decline-all-categories-button\"]",
+        "#declineButton"
+      ],
+      "accept": [
+        "[data-testid=\"coi-banner__accept-all-categories-button\"]"
+      ],
+      "manage": [
+        "[data-testid=\"coi-banner__settings-button\"]"
+      ],
+      "save": [
+        "[data-testid=\"coi-banner__update-categories-button\"]",
+        "#updateButton"
+      ]
+    },
+    {
+      "id": "securiti",
+      "roots": [
+        ".f-pref-sdk-banner"
+      ],
+      "reject": [
+        ".cmp-decline-btn"
+      ],
+      "save": [
+        ".cmp-save-btn"
+      ]
+    },
+    {
+      "id": "axeptio-tcf",
+      "roots": [
+        ".modal-dialog[role=\"dialog\"]:has(#axeptio_btn_dismiss)"
+      ],
+      "reject": [
+        "#axeptio_btn_dismiss"
+      ],
+      "accept": [
+        "#axeptio_btn_acceptAll",
+        "#axeptio_btn_config_acceptAll"
+      ]
+    },
+    {
+      "id": "orejime",
+      "roots": [
+        ".orejime-Banner",
+        ".orejime-Notice"
+      ],
+      "reject": [
+        "button.orejime-Banner-declineButton",
+        "button.orejime-Notice-declineButton"
+      ],
+      "manage": [
+        "button.orejime-Banner-learnMoreButton",
+        "button.orejime-Notice-learnMoreButton"
+      ]
+    },
+    {
+      "id": "drupal-eu-cookie-compliance",
+      "roots": [
+        "#sliding-popup:has(.eu-cookie-compliance-banner)",
+        ".eu-cookie-compliance-banner"
+      ],
+      "reject": [
+        "button.decline-button",
+        "button.eu-cookie-compliance-reject-button"
+      ],
+      "save": [
+        "button.eu-cookie-compliance-save-preferences-button"
+      ]
+    },
+    {
+      "id": "civic-cookiecontrol",
+      "roots": [
+        "#ccc-notify"
+      ],
+      "reject": [
+        "button#ccc-notify-reject"
+      ]
+    },
+    {
+      "id": "orestbida-v2",
+      "roots": [
+        "#cc_div #cm",
+        "#cc_div #s-cnt"
+      ],
+      "reject": [
+        "button#s-rall-bn",
+        "button[data-cc=\"accept-necessary\"]"
+      ],
+      "manage": [
+        "button[data-cc=\"c-settings\"]"
+      ],
+      "save": [
+        "button#s-sv-bn"
+      ]
+    },
+    {
+      "id": "glowcookies",
+      "roots": [
+        "#glowCookies-banner"
+      ],
+      "reject": [
+        "button#rejectCookies"
+      ]
+    },
+    {
+      "id": "brainsum-cookieconsent",
+      "roots": [
+        "#cconsent-bar",
+        "#cconsent-modal",
+        "#cconsent-init-modal"
+      ],
+      "reject": [
+        "button.consent-decline"
+      ],
+      "manage": [
+        "button.ccb__edit",
+        "button.ccm__edit"
+      ],
+      "save": [
+        "button#ccm__footer__consent-modal-submit"
+      ]
+    },
+    {
+      "id": "metamorfosilab-cookies-consent",
+      "roots": [
+        "#cc-window"
+      ],
+      "reject": [
+        "button#cc-btn-reject"
+      ],
+      "manage": [
+        "button#cc-btn-settings"
+      ]
+    },
+    {
+      "id": "bootstrap-cookie-consent-manager",
+      "roots": [
+        "#cookie-consent-manager-banner",
+        "#cookie-consent-manager-modal"
+      ],
+      "reject": [
+        "button[data-cookie-button-function=\"reject-all-cookies\"]"
+      ],
+      "manage": [
+        "button[data-cookie-button-function=\"customize-cookies\"]"
+      ],
+      "save": [
+        "button[data-cookie-button-function=\"save-cookies\"]"
+      ]
     }
   ];
 
   function normalizeLabel(value) {
     return String(value || '').normalize('NFKC').toLowerCase()
       .replace(/[\u200b-\u200f\u202a-\u202e\u2060-\u206f]/g, '')
+      .replace(/\u00ad/g, '')
+      .replace(/[\u2010-\u2015\u2212]/g, '-')
       .replace(/[’‘]/g, "'")
       .replace(/\s+/gu, ' ').trim()
       .replace(/[.!?…:;،。！？：；]+$/u, '').trim();
@@ -152,7 +372,10 @@
     reject: [
       'reject', 'reject all', 'reject all cookies', 'reject cookies', 'reject optional cookies', 'reject non-essential',
       'reject non-essential cookies', 'reject all non-essential cookies', 'decline', 'decline all', 'deny', 'deny all',
-      'deny cookies', 'refuse', 'refuse all', 'refuse cookies', 'i decline', 'no thanks', 'continue without accepting',
+      'deny cookies', 'refuse', 'refuse all', 'refuse cookies', 'i decline', 'no thanks', 'no, thanks', 'no thank you', 'no, thank you', 'continue without accepting',
+      'reject all additional cookies', 'reject additional cookies', 'reject nonessential cookies',
+      'accept only essential cookies', 'allow only essential cookies', 'allow essential cookies only',
+      'continue without consent', 'continue without consenting', 'disagree and close',
       'continue without agreeing', 'do not accept', 'do not consent', 'only necessary', 'necessary only',
       'essential only', 'only essential cookies', 'accept necessary', 'accept necessary only', 'accept only necessary',
       'accept only necessary cookies', 'use necessary cookies only', 'allow necessary cookies only', 'save necessary cookies only',
@@ -317,7 +540,7 @@
   }
 
   for (const provider of providers) {
-    for (const field of ['roots', 'reject', 'manage', 'save', 'ignoreUncheckedToggles']) {
+    for (const field of ['roots', 'reject', 'accept', 'manage', 'save', 'ignoreUncheckedToggles']) {
       if (provider[field]) Object.freeze(provider[field]);
     }
     Object.freeze(provider);

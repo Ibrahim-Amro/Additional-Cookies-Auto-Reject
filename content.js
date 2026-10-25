@@ -5,7 +5,7 @@
   if (!rules) return;
   const CONTROL = 'button, a, [role="button"], input[type="button"], input[type="submit"]';
   const TOGGLE = 'input[type="checkbox"], [role="switch"], [role="checkbox"]';
-  const CANDIDATE = 'dialog, [role="dialog"], [role="alertdialog"], [id*="cookie" i], [class*="cookie" i], [id*="consent" i], [class*="consent" i], [id*="gdpr" i]';
+  const CANDIDATE = 'dialog, [role="dialog"], [role="alertdialog"], [role="alert"], [id*="cookie" i], [class*="cookie" i], [id*="consent" i], [class*="consent" i], [id*="gdpr" i]';
   const roots = new Map();
   const contexts = new Map();
   const normalize = rules.normalizeLabel;
@@ -13,7 +13,7 @@
   const optionalLabels = new Set((rules.labels.optional || []).map(normalize));
   let enabled = false, configRevision = 0, timer = null, poll = null;
   let discoveryTimer = null, discovery = [], nextDiscovery = 0, lastSweep = 0;
-  let visibilityCache = new WeakMap(), kindCache = new WeakMap(), contextCache = new WeakMap();
+  let visibilityCache = new WeakMap(), kindCache = new WeakMap(), contextCache = new WeakMap(), labelCache = new WeakMap();
 
   function query(root, selector) {
     try { return Array.from(root.querySelectorAll(selector)); } catch { return []; }
@@ -39,10 +39,35 @@
   function available(el) {
     return !el.disabled && !el.matches(':disabled') && el.getAttribute('aria-disabled') !== 'true' && !el.closest('[inert]');
   }
+  function visibleContainer(container) {
+    if (visible(container.host || container)) return true;
+    // display:contents and zero-height hosts can still contain a visible fixed UI.
+    // visible(child) checks the complete ancestor chain, including hidden hosts.
+    return query(container, CONTROL).some(visible);
+  }
+  function labelledText(el) {
+    return (el.getAttribute('aria-labelledby') || '').split(/\s+/).slice(0, 16)
+      .map(id => el.getRootNode().getElementById?.(id)?.textContent || '').join(' ').slice(0, 512);
+  }
+  function associatedLabels(el) {
+    const root = el.getRootNode();
+    if (!labelCache.has(root)) {
+      const byControl = new WeakMap();
+      // Index once rather than asking .labels to search the document for every
+      // button on large forms. Native label.control preserves for/nested labels.
+      for (const label of query(root, 'label')) {
+        const control = label.control;
+        if (!control) continue;
+        if (!byControl.has(control)) byControl.set(control, []);
+        byControl.get(control).push(label);
+      }
+      labelCache.set(root, byControl);
+    }
+    return labelCache.get(root).get(el) || [];
+  }
   function names(el) {
-    const labelled = (el.getAttribute('aria-labelledby') || '').split(/\s+/)
-      .map(id => el.getRootNode().getElementById?.(id)?.textContent || '').join(' ');
-    return [el.getAttribute('aria-label'), labelled, el.tagName === 'INPUT' ? el.value : el.innerText || el.textContent, el.getAttribute('title')]
+    return [el.getAttribute('aria-label'), labelledText(el), el.tagName === 'INPUT' ? el.value : el.innerText || el.textContent,
+      ...associatedLabels(el).map(label => label.innerText || label.textContent), el.getAttribute('title')]
       .filter(text => text && text.trim() && text.length <= 180).map(normalize);
   }
   function kind(el) {
@@ -80,13 +105,13 @@
     const hint = `${el.id} ${typeof el.className === 'string' ? el.className : ''}`;
     const style = getComputedStyle(el);
     const dedicated = /^(consent\.google\.com|consent\.youtube\.com)$/.test(location.hostname) && el.tagName === 'FORM';
-    const shape = dedicated || el.matches('dialog, [role="dialog"], [role="alertdialog"]') ||
+    const shape = dedicated || el.matches('dialog, [role="dialog"], [role="alertdialog"], [role="alert"]') ||
       style.position === 'fixed' || style.position === 'sticky' ||
       /(?:cookie|consent|gdpr)[-_ ]?(?:banner|modal|dialog|notice|settings|preferences)|(?:banner|modal|dialog)[-_ ]?(?:cookie|consent)|consent/i.test(hint);
-    if (!shape || !visible(el)) return false;
+    if (!shape || !visibleContainer(el)) return false;
     const raw = (dedicated ? document.body?.textContent : el.textContent) || '';
     if (raw.length > 16000) return false;
-    const text = normalize((dedicated ? document.body?.innerText : el.innerText) || raw);
+    const text = normalize(`${(dedicated ? document.body?.innerText : el.innerText) || raw} ${(el.getAttribute('aria-label') || '').slice(0, 512)} ${labelledText(el)}`);
     const cookieTerms = rules.labels.cookieContext || rules.labels.consent;
     if (!hasTerm(text, cookieTerms)) return false;
     const technicalTerms = rules.labels.consent.filter(term => !cookieTerms.includes(term));
@@ -99,9 +124,9 @@
     for (const provider of rules.providers) {
       for (const selector of provider.roots) {
         // Some CMPs use the known root as the shadow host itself.
-        if (root.host?.matches(selector) && visible(root.host)) found.set(root, provider);
+        if (root.host?.matches(selector) && visibleContainer(root)) found.set(root, provider);
         for (const el of query(root, selector)) {
-          if (el !== document.body && el !== document.documentElement && visible(el)) found.set(el, provider);
+          if (el !== document.body && el !== document.documentElement && visibleContainer(el)) found.set(el, provider);
         }
       }
     }
@@ -125,11 +150,15 @@
         (!!provider === !!otherProvider && other.contains(el)))));
   }
   function findAction(container, provider, action) {
-    for (const selector of provider?.[action] || []) for (const el of query(container, selector)) {
+    const eligible = el => clickable(el) && !(provider?.accept || []).some(selector => el.matches(selector));
+    for (const selector of provider?.[action] || []) for (const el of [
+      ...(container.matches?.(selector) ? [container] : []), ...query(container, selector)
+    ]) {
       const kinds = new Set(names(el).map(rules.classifyLabel).filter(Boolean));
-      if (clickable(el) && [...kinds].every(detected => detected === action)) return el;
+      if (eligible(el) && [...kinds].every(detected => detected === action)) return el;
     }
-    return query(container, CONTROL).find(el => kind(el) === action && clickable(el));
+    if (provider?.strictActions) return undefined;
+    return query(container, CONTROL).find(el => kind(el) === action && eligible(el));
   }
   function stateFor(container) {
     const previous = contexts.get(container);
@@ -149,11 +178,10 @@
     try { el.click(); schedule(250); return true; } catch { return false; }
   }
   function toggleCategory(el) {
-    const labelled = (el.getAttribute('aria-labelledby') || '').split(/\s+/)
-      .map(id => el.getRootNode().getElementById?.(id)?.textContent || '').join(' ');
+    const labelled = labelledText(el);
     const directLabels = [el.getAttribute('aria-label') || '', labelled,
       el.tagName === 'INPUT' ? '' : el.innerText || el.textContent || '',
-      ...[...(el.labels || [])].map(label => label.innerText || label.textContent)].map(normalize).filter(Boolean);
+      ...associatedLabels(el).map(label => label.innerText || label.textContent)].map(normalize).filter(Boolean);
     const labels = [...directLabels];
     const directCategory = directLabels.some(text => necessaryLabels.has(text) || optionalLabels.has(text));
     let row = el.parentElement;
@@ -190,7 +218,7 @@
           !el.hasAttribute('data-optanongroupid') && !el.hasAttribute('data-purposeid') &&
           (ariaChecked === null || ariaChecked === 'false') && !el.closest('.line-through') &&
           (provider?.ignoreUncheckedToggles || []).some(selector => el.matches(selector)) &&
-          !visible(el) && ![...(el.labels || [])].some(visible)) continue;
+          !visible(el) && !associatedLabels(el).some(visible)) continue;
       const category = toggleCategory(el);
       if (!category) return false;
       if (category === 'necessary') continue;
@@ -198,7 +226,7 @@
       const checked = el.tagName === 'INPUT' ? el.checked : el.getAttribute('aria-checked') === 'true';
       if (el.tagName !== 'INPUT' && !['true', 'false'].includes(el.getAttribute('aria-checked'))) return false;
       if (!checked) continue;
-      const labelVisible = [...(el.labels || [])].some(visible);
+      const labelVisible = associatedLabels(el).some(visible);
       if (!available(el) || (!visible(el) && !labelVisible)) return false;
       const tries = state.toggleTries.get(el) || 0;
       if (tries >= 2) return false;
@@ -264,8 +292,8 @@
     timer = null;
     if (!enabled || document.visibilityState === 'hidden') return;
     lastSweep = Date.now();
-    visibilityCache = new WeakMap(); kindCache = new WeakMap(); contextCache = new WeakMap();
-    for (const [container] of contexts) if (!container.isConnected || !visible(container.host || container)) contexts.delete(container);
+    visibilityCache = new WeakMap(); kindCache = new WeakMap(); contextCache = new WeakMap(); labelCache = new WeakMap();
+    for (const [container] of contexts) if (!container.isConnected || !visibleContainer(container)) contexts.delete(container);
     for (const [root, observer] of roots) {
       if (root !== document && !root.host.isConnected) { observer.disconnect(); roots.delete(root); continue; }
       for (const [container, provider] of collectContexts(root)) if (handle(container, provider)) return;

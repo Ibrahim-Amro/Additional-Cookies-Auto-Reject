@@ -1,6 +1,6 @@
 {
   "name": "additional-cookies-auto-reject",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "private": true,
   "description": "Local tests and packaging for the Auto Reject Cookies extension",
   "scripts": {

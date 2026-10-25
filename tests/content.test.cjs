@@ -330,3 +330,123 @@ test('native checkbox with mixed ARIA state cannot be saved as optional-off', as
   await quiet();
   assert.deepEqual(await getEvents(), []);
 });
+
+for (const fixture of require('./fixtures/recognition.json')) {
+  test(`expanded accessible and typographic recognition: ${fixture.id}`, async () => {
+    await load(fixture.html);
+    if (fixture.expectClicks) await rejected(); else await quiet();
+    assert.deepEqual(await getEvents(), fixture.expectClicks ? ['reject'] : []);
+  });
+}
+
+test('relative-position alert cookie banners support Microsoft WCP-style controls', async () => {
+  await load('<div id="wcpConsentBannerCtrl" role="alert" style="position:relative"><p>We use optional cookies to improve our services.</p><button onclick="events.push(\'accept\')">Accept</button><button onclick="events.push(\'reject\');this.parentElement.hidden=true">Reject</button><button>Manage cookies</button></div>');
+  await rejected();
+  assert.deepEqual(await getEvents(), ['reject']);
+});
+
+test('zero-height CMP wrappers still expose visible fixed rejection controls', async () => {
+  await load('<div id="onetrust-banner-sdk" style="height:0"><div style="position:fixed;bottom:0"><button id="onetrust-reject-all-handler" onclick="events.push(\'reject\');this.parentElement.parentElement.hidden=true">Unlisted translation</button></div></div>');
+  await rejected();
+  assert.deepEqual(await getEvents(), ['reject']);
+});
+
+test('display-contents consent dialogs use their accessible name', async () => {
+  await load('<div role="dialog" aria-label="Cookie consent" style="display:contents"><button onclick="events.push(\'reject\');this.parentElement.hidden=true">Reject all</button></div>');
+  await rejected();
+});
+
+test('hidden CMP wrappers cannot expose their fixed child controls', async () => {
+  await load('<div id="onetrust-banner-sdk" hidden><div style="position:fixed"><button id="onetrust-reject-all-handler" onclick="events.push(\'wrong\')">Reject all</button></div></div>');
+  await quiet();
+  assert.deepEqual(await getEvents(), []);
+});
+
+for (const rejectClass of ['sp_choice_type_13', 'sp_choice_type_REJECT_ALL']) {
+  test(`Sourcepoint chooses only its documented reject action: ${rejectClass}`, async () => {
+    await load(`<section class="sp_message_container"><button class="sp_choice_type_11" onclick="events.push('accept')">Unlisted accept translation</button><button class="sp_choice_type_12" onclick="events.push('manage')">Open settings</button><button class="${rejectClass}" onclick="events.push('reject');this.closest('section').hidden=true">Unlisted refusal translation</button></section>`);
+    await rejected();
+    assert.deepEqual(await getEvents(), ['reject']);
+  });
+}
+
+test('Sourcepoint documented action classes work in modern message templates', async () => {
+  await load('<div class="message"><button class="sp_choice_type_11" onclick="events.push(\'accept\')">Accept all</button><button class="sp_choice_type_13" onclick="events.push(\'reject\');this.hidden=true">Unlisted refusal translation</button></div>');
+  await rejected();
+  assert.deepEqual(await getEvents(), ['reject']);
+});
+
+test('Sourcepoint acceptance metadata overrides misleading button text', async () => {
+  await load('<section class="sp_message"><button class="sp_choice_type_11" onclick="events.push(\'wrong\')">Reject all</button></section>');
+  await quiet();
+  assert.deepEqual(await getEvents(), []);
+});
+
+test('Sourcepoint subscription and custom JavaScript choices are never guessed as rejection', async () => {
+  await load('<section class="sp_message"><button class="sp_choice_type_9" onclick="events.push(\'wrong\')">Reject all and subscribe</button></section>');
+  await quiet();
+  assert.deepEqual(await getEvents(), []);
+});
+
+for (const choice of ['11', '9', '1', '15', '5']) {
+  test(`modern Sourcepoint non-refusal metadata cannot be overridden by its label: ${choice}`, async () => {
+    await load(`<div role="dialog" aria-label="Cookie consent"><button class="sp_choice_type_${choice}" onclick="events.push('wrong')">Reject all</button></div>`);
+    await quiet();
+    assert.deepEqual(await getEvents(), []);
+  });
+}
+
+for (const label of ['Manage preferences', 'Save preferences']) {
+  test(`Sourcepoint custom JavaScript is not a settings/save action merely because of its label: ${label}`, async () => {
+    await load(`<section class="sp_message"><p>Cookie consent</p><label><input type="checkbox">Analytics cookies</label><button class="sp_choice_type_9" onclick="events.push('wrong')">${label}</button></section>`);
+    await quiet();
+    assert.deepEqual(await getEvents(), []);
+  });
+}
+
+test('Sourcepoint explicit privacy-manager action can lead to its explicit refusal', async () => {
+  await load('<section><button class="sp_choice_type_12" onclick="events.push(\'manage\');this.hidden=true;document.querySelector(\'#sp-refusal\').hidden=false">Open privacy options</button><button id="sp-refusal" class="sp_choice_type_REJECT_ALL" hidden onclick="events.push(\'reject\');this.closest(\'section\').hidden=true">Vendor refusal action</button></section>');
+  await rejected();
+  assert.deepEqual(await getEvents(), ['manage', 'reject']);
+});
+
+for (const fixture of require('./fixtures/providers.json')) {
+  test(`source-verified provider adapter: ${fixture.caseId}`, async () => {
+    const html = await page.evaluate(({ html, rejectSelectors }) => {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const targets = new Set(rejectSelectors.flatMap(selector => [...doc.querySelectorAll(selector)]));
+      if (!targets.size) throw Error('Fixture has no source-verified reject control');
+      for (const el of targets) {
+        // Force the explicit provider route, independently of generic translation matching.
+        el.textContent = 'Vendor refusal action';
+        for (const attr of ['aria-label', 'aria-labelledby', 'title']) el.removeAttribute(attr);
+      }
+      return doc.body.innerHTML;
+    }, fixture);
+    await load(html);
+    await rejected();
+    assert.deepEqual(await getEvents(), ['reject']);
+  });
+}
+
+test('legacy CookieConsent opens settings before using its explicit necessary-only control', async () => {
+  await load(`<section><div id="cc_div"><div id="cm"><p>We use cookies.</p><button data-cc="c-settings" onclick="events.push('manage');document.querySelector('#cm').hidden=true;document.querySelector('#s-cnt').hidden=false">Open options</button></div><div id="s-cnt" hidden><button id="s-all-bn" onclick="events.push('accept')">Accept all</button><button id="s-rall-bn" onclick="events.push('reject');this.closest('section').hidden=true">Vendor refusal action</button></div></div></section>`);
+  await rejected();
+  assert.deepEqual(await getEvents(), ['manage', 'reject']);
+});
+
+test('Axeptio TCF explicit refusal is found inside a closed shadow root', async () => {
+  await load('<div id="random-vendor-host"></div>');
+  await page.evaluate(() => {
+    document.querySelector('#random-vendor-host').attachShadow({ mode:'closed' }).innerHTML =
+      '<div class="modal-dialog" role="dialog"><button id="axeptio_btn_acceptAll" onclick="window.events.push(\'accept\')">Accept all</button><button id="axeptio_btn_dismiss" onclick="window.events.push(\'reject\');this.parentElement.hidden=true">Vendor refusal action</button></div>';
+  });
+  await rejected();
+  assert.deepEqual(await getEvents(), ['reject']);
+});
+
+test('unrelated sliding popups are not Drupal cookie consent', async () => {
+  await load('<div id="sliding-popup" role="dialog"><p>Decline this purchase offer?</p><button class="decline-button" onclick="events.push(\'wrong\')">Decline</button></div>');
+  await quiet();
+  assert.deepEqual(await getEvents(), []);
+});

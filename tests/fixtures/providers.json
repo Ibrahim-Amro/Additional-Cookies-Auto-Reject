@@ -1,0 +1,181 @@
+[
+  {
+    "id": "cookiescript",
+    "expected": "reject",
+    "html": "<style>section{position:fixed;inset:20px;padding:24px;background:white;border:1px solid}button{padding:12px;margin:6px}</style><section class=\"cookiescript_injected\"><p>Provider controls</p><button id=\"cookiescript_accept\" onclick=\"events.push('accept')\">Accept all</button><button id=\"cookiescript_save\" onclick=\"events.push('unsafe-save')\">Save settings</button><button id=\"cookiescript_reject\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Vendor refusal action</button></section><script>window.events=window.events||[];</script>",
+    "caseId": "cookiescript-0",
+    "rejectSelectors": [
+      "#cookiescript_reject"
+    ]
+  },
+  {
+    "id": "termly",
+    "expected": "reject",
+    "html": "<style>section{position:fixed;inset:20px;padding:24px;background:white;border:1px solid}button{padding:12px;margin:6px}</style><section data-termly-part=\"consent-banner\" data-termly-variant=\"banner\"><p>Provider controls</p><div data-termly-part=\"banner-actions\"><button data-tid=\"banner-accept\" onclick=\"events.push('accept')\">Accept all</button><button class=\"t-declineButton\" data-tid=\"banner-decline\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Vendor refusal action</button></div></section><script>window.events=window.events||[];</script>",
+    "caseId": "termly-1",
+    "rejectSelectors": [
+      "[data-tid=\"banner-decline\"]",
+      ".t-declineAllButton"
+    ]
+  },
+  {
+    "id": "trustarc",
+    "expected": "reject",
+    "html": "<style>section{position:fixed;inset:20px;padding:24px;background:white;border:1px solid}button{padding:12px;margin:6px}</style><section id=\"truste-consent-track\"><p>Provider controls</p><button id=\"truste-consent-button\" class=\"tc-btn-primary\" onclick=\"events.push('accept')\">Accept all</button><button id=\"truste-consent-required\" class=\"tc-btn-primary\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Vendor refusal action</button><button id=\"truste-show-consent\" onclick=\"events.push('manage')\">Preferences</button></section><script>window.events=window.events||[];</script>",
+    "caseId": "trustarc-2",
+    "rejectSelectors": [
+      "#truste-consent-required"
+    ]
+  },
+  {
+    "id": "cookie-information",
+    "expected": "reject",
+    "html": "<style>section{position:fixed;inset:20px;padding:24px;background:white;border:1px solid}button{padding:12px;margin:6px}</style><section id=\"coi-banner-wrapper\"><p>Provider controls</p><button class=\"coi-banner__accept\" data-testid=\"coi-banner__accept-all-categories-button\" onclick=\"events.push('accept')\">Accept all</button><button id=\"updateButton\" class=\"coi-banner__decline\" data-testid=\"coi-banner__update-categories-button\" onclick=\"events.push('unsafe-save')\">Save settings</button><button id=\"declineButton\" class=\"coi-banner__decline\" data-testid=\"coi-banner__decline-all-categories-button\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Vendor refusal action</button></section><script>window.events=window.events||[];</script>",
+    "caseId": "cookie-information-3",
+    "rejectSelectors": [
+      "[data-testid=\"coi-banner__decline-all-categories-button\"]",
+      "#declineButton"
+    ]
+  },
+  {
+    "id": "securiti",
+    "expected": "reject",
+    "html": "<style>section{position:fixed;inset:20px;padding:24px;background:white;border:1px solid}button{padding:12px;margin:6px}</style><section class=\"f-pref-sdk-banner\"><div id=\"cookiePreferencesDialog\" role=\"dialog\"><p>Provider controls</p><button class=\"cmp-save-btn\" onclick=\"events.push('unsafe-save')\">Save changes</button><button class=\"cmp-decline-btn\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Vendor refusal action</button></div></section><script>window.events=window.events||[];</script>",
+    "caseId": "securiti-4",
+    "rejectSelectors": [
+      ".cmp-decline-btn"
+    ]
+  },
+  {
+    "id": "axeptio-tcf",
+    "expected": "reject",
+    "html": "<style>section{position:fixed;inset:20px;padding:24px;background:white;border:1px solid}button{padding:12px;margin:6px}</style><section class=\"modal-dialog page-1\" role=\"dialog\"><p>Provider controls</p><button id=\"axeptio_btn_acceptAll\" onclick=\"events.push('accept')\">Accept all</button><button id=\"axeptio_btn_dismiss\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Vendor refusal action</button><button id=\"axeptio_btn_configure\" onclick=\"events.push('manage')\">Preferences</button></section><script>window.events=window.events||[];</script>",
+    "caseId": "axeptio-tcf-5",
+    "rejectSelectors": [
+      "#axeptio_btn_dismiss"
+    ]
+  },
+  {
+    "id": "orejime",
+    "html": "<section><div class=\"orejime-Banner\" data-testid=\"orejime-banner\"><div class=\"orejime-Banner-body\"><h1 class=\"orejime-Banner-title\">Cookie preferences</h1><p class=\"orejime-Banner-description\">We use cookies for optional analytics.</p><ul class=\"orejime-Banner-actions orejime-ButtonList\"><li><button type=\"button\" class=\"orejime-Button orejime-Button--save orejime-Banner-button orejime-Banner-saveButton\" data-testid=\"orejime-banner-accept\" onclick=\"events.push('accept')\">Accept all</button></li><li><button type=\"button\" class=\"orejime-Button orejime-Button--decline orejime-Banner-button orejime-Banner-declineButton\" data-testid=\"orejime-banner-decline\" title=\"Decline optional cookies\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Decline</button></li></ul></div></div></section>",
+    "expected": "reject",
+    "caseId": "orejime-6",
+    "rejectSelectors": [
+      "button.orejime-Banner-declineButton",
+      "button.orejime-Notice-declineButton"
+    ]
+  },
+  {
+    "id": "orejime",
+    "html": "<section><div class=\"orejime-Notice\"><div class=\"orejime-Notice-body\"><p class=\"orejime-Notice-description\">We use cookies for analytics.</p><ul class=\"orejime-Notice-actions\"><li><button type=\"button\" class=\"orejime-Button orejime-Button--save orejime-Notice-button orejime-Notice-saveButton\" onclick=\"events.push('accept')\">Accept all</button></li><li><button type=\"button\" class=\"orejime-Button orejime-Button--decline orejime-Notice-button orejime-Notice-declineButton\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Decline</button></li></ul></div></div></section>",
+    "expected": "reject",
+    "caseId": "orejime-7",
+    "rejectSelectors": [
+      "button.orejime-Banner-declineButton",
+      "button.orejime-Notice-declineButton"
+    ]
+  },
+  {
+    "id": "drupal-eu-cookie-compliance",
+    "html": "<section><div id=\"sliding-popup\" role=\"alertdialog\" aria-label=\"Cookie compliance banner\"><div class=\"eu-cookie-compliance-banner eu-cookie-compliance-banner-info eu-cookie-compliance-banner--opt-in\"><div class=\"popup-content info eu-cookie-compliance-content\"><div id=\"popup-text\" class=\"eu-cookie-compliance-message\" role=\"document\">We use cookies.</div><div id=\"popup-buttons\" class=\"eu-cookie-compliance-buttons\"><button type=\"button\" class=\"agree-button eu-cookie-compliance-default-button\" onclick=\"events.push('accept')\">Accept all cookies</button><button type=\"button\" class=\"decline-button eu-cookie-compliance-secondary-button\" onclick=\"events.push('reject');this.closest('section').hidden=true\">No, do not track me</button></div></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "drupal-eu-cookie-compliance-8",
+    "rejectSelectors": [
+      "button.decline-button",
+      "button.eu-cookie-compliance-reject-button"
+    ]
+  },
+  {
+    "id": "drupal-eu-cookie-compliance",
+    "html": "<section><div id=\"sliding-popup\" role=\"alertdialog\"><div class=\"eu-cookie-compliance-banner eu-cookie-compliance-banner--categories\"><div class=\"popup-content info eu-cookie-compliance-content\"><div class=\"eu-cookie-compliance-message\">We use cookies.</div><div id=\"popup-buttons\" class=\"eu-cookie-compliance-buttons eu-cookie-compliance-has-categories\"><button type=\"button\" class=\"agree-button eu-cookie-compliance-default-button\" onclick=\"events.push('accept')\">Accept all cookies</button><button type=\"button\" class=\"eu-cookie-compliance-reject-button\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject all</button></div></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "drupal-eu-cookie-compliance-9",
+    "rejectSelectors": [
+      "button.decline-button",
+      "button.eu-cookie-compliance-reject-button"
+    ]
+  },
+  {
+    "id": "civic-cookiecontrol",
+    "html": "<section><div id=\"ccc-notify\" class=\"ccc-notify__top ccc-content--dark\" role=\"dialog\" aria-labelledby=\"ccc-notify-title\"><div class=\"ccc-notify-text\"><h3 id=\"ccc-notify-title\">Your choice regarding cookies on this site</h3><p>We use cookies to optimise site functionality.</p></div><div class=\"ccc-notify-buttons\"><button id=\"ccc-notify-accept\" class=\"ccc-notify-button ccc-link ccc-tabbable ccc-accept-button\" onclick=\"events.push('accept')\">I Accept Cookies</button><button id=\"ccc-notify-reject\" class=\"ccc-notify-button ccc-link ccc-tabbable ccc-reject-button\" onclick=\"events.push('reject');this.closest('section').hidden=true\">I Do Not Accept</button></div></div></section>",
+    "expected": "reject",
+    "caseId": "civic-cookiecontrol-10",
+    "rejectSelectors": [
+      "button#ccc-notify-reject"
+    ]
+  },
+  {
+    "id": "orestbida-v2",
+    "html": "<section><div id=\"cc_div\" class=\"cc_div\"><div id=\"s-cnt\"><div id=\"c-vln\"><div id=\"c-s-in\"><div id=\"cs\" role=\"dialog\" aria-labelledby=\"s-ttl\"><div id=\"s-inr\"><div id=\"s-hdr\"><h2 id=\"s-ttl\">Cookie preferences</h2></div><div id=\"s-bns\"><button type=\"button\" id=\"s-all-bn\" class=\"c-bn\" onclick=\"events.push('accept')\">Accept all</button><button type=\"button\" id=\"s-rall-bn\" class=\"c-bn\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject all</button></div></div></div></div></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "orestbida-v2-11",
+    "rejectSelectors": [
+      "button#s-rall-bn",
+      "button[data-cc=\"accept-necessary\"]"
+    ]
+  },
+  {
+    "id": "orestbida-v2",
+    "html": "<section><div id=\"cc_div\" class=\"cc_div\"><div id=\"cm\" role=\"dialog\"><div id=\"c-inr-i\"><p id=\"c-txt\">We use cookies.</p><div id=\"c-bns\"><button type=\"button\" id=\"c-p-bn\" class=\"c-bn\" data-cc=\"accept-all\" onclick=\"events.push('accept')\">Accept all</button><button type=\"button\" class=\"c-bn\" data-cc=\"accept-necessary\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Only necessary cookies</button></div></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "orestbida-v2-12",
+    "rejectSelectors": [
+      "button#s-rall-bn",
+      "button[data-cc=\"accept-necessary\"]"
+    ]
+  },
+  {
+    "id": "glowcookies",
+    "html": "<section><div id=\"glowCookies-banner\" class=\"glowCookies__banner glowCookies__banner__1 glowCookies__bottom\"><h3>Cookies</h3><p>We use cookies for analytics.</p><div class=\"btn__section\"><button type=\"button\" id=\"acceptCookies\" class=\"btn__accept accept__btn__styles\" onclick=\"events.push('accept')\">Accept</button><button type=\"button\" id=\"rejectCookies\" class=\"btn__settings settings__btn__styles\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject</button></div></div></section>",
+    "expected": "reject",
+    "caseId": "glowcookies-13",
+    "rejectSelectors": [
+      "button#rejectCookies"
+    ]
+  },
+  {
+    "id": "brainsum-cookieconsent",
+    "html": "<section><div id=\"cconsent-bar\" role=\"dialog\"><div class=\"ccb__wrapper\"><div class=\"ccb__left\">This website uses cookies.</div><div class=\"ccb__right\"><div class=\"ccb__button\"><button class=\"ccb__edit\">Cookie settings</button><button class=\"consent-decline\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject all cookies</button><button class=\"consent-give\" onclick=\"events.push('accept')\">Accept all cookies</button></div></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "brainsum-cookieconsent-14",
+    "rejectSelectors": [
+      "button.consent-decline"
+    ]
+  },
+  {
+    "id": "brainsum-cookieconsent",
+    "html": "<section><div id=\"cconsent-modal\" class=\"ccm--visible\" role=\"dialog\"><div class=\"ccm__content\"><div class=\"ccm__content__heading\"><h2>Cookie settings</h2></div><div class=\"ccm__footer\"><button class=\"consent-give\" onclick=\"events.push('accept')\">Accept all cookies</button><button class=\"consent-decline\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject all cookies and close</button></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "brainsum-cookieconsent-15",
+    "rejectSelectors": [
+      "button.consent-decline"
+    ]
+  },
+  {
+    "id": "metamorfosilab-cookies-consent",
+    "html": "<section><div id=\"cc-window\" class=\"cc-window cc-pos-bottom-left cc-content-left\"><div class=\"cc-window-content\"><div class=\"cc-window-title\">Cookies compliance</div><div class=\"cc-window-message\">We use cookies.</div><div class=\"cc-window-buttons\"><button type=\"button\" id=\"cc-btn-accept\" class=\"cc-btn-accept\" onclick=\"events.push('accept')\">Accept all</button><button type=\"button\" id=\"cc-btn-reject\" class=\"cc-btn-reject\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject all</button></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "metamorfosilab-cookies-consent-16",
+    "rejectSelectors": [
+      "button#cc-btn-reject"
+    ]
+  },
+  {
+    "id": "bootstrap-cookie-consent-manager",
+    "html": "<section><div id=\"cookie-consent-manager-banner\" class=\"position-fixed p-3 rounded border bg-body-tertiary\"><div class=\"container\"><div class=\"row\"><div class=\"col-12\"><p class=\"fw-bold mb-1\">We respect your privacy</p><p>We use cookies on our site.</p></div><div class=\"col\"><div class=\"d-flex\"><button type=\"button\" class=\"btn btn-primary\" data-cookie-button-function=\"accept-all-cookies\" aria-label=\"Accept all cookies\" onclick=\"events.push('accept')\">Accept all</button><button type=\"button\" class=\"btn btn-outline-primary\" data-cookie-button-function=\"reject-all-cookies\" aria-label=\"Reject all cookies\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject all</button></div></div></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "bootstrap-cookie-consent-manager-17",
+    "rejectSelectors": [
+      "button[data-cookie-button-function=\"reject-all-cookies\"]"
+    ]
+  },
+  {
+    "id": "bootstrap-cookie-consent-manager",
+    "html": "<section><div id=\"cookie-consent-manager-modal\" class=\"modal show\" role=\"dialog\"><div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-header\"><h2 class=\"modal-title\">Customize the cookies</h2></div><div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-outline-primary\" data-cookie-button-function=\"accept-all-cookies\" onclick=\"events.push('accept')\">Accept all</button><button type=\"button\" class=\"btn btn-outline-primary\" data-cookie-button-function=\"reject-all-cookies\" aria-label=\"Reject all cookies\" onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject all</button></div></div></div></div></section>",
+    "expected": "reject",
+    "caseId": "bootstrap-cookie-consent-manager-18",
+    "rejectSelectors": [
+      "button[data-cookie-button-function=\"reject-all-cookies\"]"
+    ]
+  }
+]

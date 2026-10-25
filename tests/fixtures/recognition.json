@@ -1,0 +1,52 @@
+[
+  {
+    "id": "unicode-nonbreaking-hyphen",
+    "html": "<section id='cookie-banner' role='dialog'><p>We use cookies.</p><button onclick=\"events.push('reject');this.closest('section').hidden=true\">Reject non‑essential cookies</button></section>",
+    "expectClicks": 1
+  },
+  {
+    "id": "comma-no-thanks",
+    "html": "<section id='cookie-banner' role='dialog'><p>We use cookies.</p><button onclick=\"events.push('reject');this.closest('section').hidden=true\">No, thanks</button></section>",
+    "expectClicks": 1
+  },
+  {
+    "id": "native-associated-action-label",
+    "html": "<section id='cookie-banner' role='dialog'><p>We use cookies.</p><label for='deny-cookie'>Reject all</label><input id='deny-cookie' type='button' value='' style='width:80px;height:30px' onclick=\"events.push('reject');this.closest('section').hidden=true\"></section>",
+    "expectClicks": 1
+  },
+  {
+    "id": "aria-dialog-name-context",
+    "html": "<div role='dialog' aria-label='Cookie consent'><button aria-label='Reject all' onclick=\"events.push('reject');this.parentElement.hidden=true\">×</button></div>",
+    "expectClicks": 1
+  },
+  {
+    "id": "aria-dialog-external-title-context",
+    "html": "<h2 id='cookie-title'>Cookie consent preferences</h2><div role='dialog' aria-labelledby='cookie-title'><button aria-label='Reject all' onclick=\"events.push('reject');this.parentElement.hidden=true\">×</button></div>",
+    "expectClicks": 1
+  },
+  {
+    "id": "food-order-remains-untouched",
+    "html": "<div role='dialog' aria-label='Cookie selection'><p>Add a box of cookies to your order?</p><button onclick=\"events.push('wrong')\">No, thanks</button></div>",
+    "expectClicks": 0
+  },
+  {
+    "id": "medical-consent-remains-untouched",
+    "html": "<div role='dialog' aria-label='Treatment consent'><p>Do you consent to this medical procedure?</p><button onclick=\"events.push('wrong')\">Reject all</button></div>",
+    "expectClicks": 0
+  },
+  {
+    "id": "purchase-consent-remains-untouched",
+    "html": "<div role='dialog' aria-label='Purchase consent'><p>Review payment processing preferences.</p><button onclick=\"events.push('wrong')\">Reject all</button></div>",
+    "expectClicks": 0
+  },
+  {
+    "id": "conflicting-native-label-remains-untouched",
+    "html": "<section id='cookie-banner' role='dialog'><p>We use cookies.</p><label for='conflict'>Reject all</label><input id='conflict' type='button' value='Accept all' onclick=\"events.push('wrong')\"></section>",
+    "expectClicks": 0
+  },
+  {
+    "id": "mixed-intent-dash-remains-untouched",
+    "html": "<section id='cookie-banner' role='dialog'><p>We use cookies.</p><button onclick=\"events.push('wrong')\">Reject all — accept analytics</button></section>",
+    "expectClicks": 0
+  }
+]

@@ -71,7 +71,7 @@ function createZip(entries) {
 function buildPackage(root = path.resolve(__dirname, "..")) {
   const { manifest, runtimeFiles } = checkRepository(root);
   const filenames = [...runtimeFiles];
-  for (const filename of ["README.md", "docs/RESEARCH.md"]) {
+  for (const filename of ["README.md", "docs/RESEARCH.md", "docs/EXPANDED-COVERAGE.md"]) {
     const absolutePath = path.join(root, filename);
     if (fs.existsSync(absolutePath) && fs.lstatSync(absolutePath).isFile()) filenames.push(filename);
   }

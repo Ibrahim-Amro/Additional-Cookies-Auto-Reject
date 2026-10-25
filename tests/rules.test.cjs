@@ -8,10 +8,10 @@ vm.runInContext(fs.readFileSync(path.join(__dirname, '../consent-rules.js'), 'ut
 const rules = sandbox.CookieConsentRules;
 
 test('exact refusal phrases normalize whitespace, Unicode width and punctuation', () => {
-  for (const text of [' Reject\u00a0all! ', 'REJECT ALL', 'Ｒｅｊｅｃｔ ａｌｌ', 'رفض الكل', 'すべて拒否', 'Alle ablehnen', 'Accept only necessary cookies']) {
+  for (const text of [' Reject\u00a0all! ', 'REJECT ALL', 'Ｒｅｊｅｃｔ ａｌｌ', 'رفض الكل', 'すべて拒否', 'Alle ablehnen', 'Accept only necessary cookies', 'Reject non‑essential cookies', 'No, thanks', 'Accept only essential cookies']) {
     assert.equal(rules.classifyLabel(text), 'reject', text);
   }
-  for (const text of ['Reject all and subscribe', 'Accept all', 'Allow all cookies', 'All cookies accepted', 'I reject this order']) {
+  for (const text of ['Reject all and subscribe', 'Accept all', 'Allow all cookies', 'All cookies accepted', 'I reject this order', 'Reject all — accept analytics']) {
     assert.notEqual(rules.classifyLabel(text), 'reject', text);
   }
 });

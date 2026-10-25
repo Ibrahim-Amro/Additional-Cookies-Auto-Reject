@@ -12,6 +12,8 @@ A Manifest V3 extension for Chrome and compatible Chromium browsers that **tries
 
 Provider rules and the primary documentation behind them are listed in [docs/RESEARCH.md](docs/RESEARCH.md). A matching provider family does not guarantee every custom configuration works. All extension code and rules are bundled locally; there are no remote rule updates, external services, or runtime dependencies.
 
+Version **2.1.0** expands the rules from 19 to **34 provider adapters**, including Sourcepoint, CookieScript, Termly, TrustArc, Cookie Information, Securiti, Axeptio TCF, Orejime, Drupal EU Cookie Compliance, Civic Cookie Control and several open-source libraries. It also recognizes accessible dialog names, associated control labels, Microsoft WCP-style alerts, and visible consent interfaces inside zero-size wrappers. [Expansion sources and validation](docs/EXPANDED-COVERAGE.md) explain the supported interfaces and limits; adapter counts are not website success-rate measurements.
+
 ## Install or upgrade
 
 Requires **Chrome 119+** or a compatible Chromium browser. Firefox and Safari are not currently supported or tested.
@@ -58,6 +60,6 @@ npm run package
 
 On Linux CI, install the browser dependencies with `npx playwright install --with-deps chromium`. `npm run test:unit` runs the non-browser tests. Browser tests load the real unpacked extension in an isolated Chromium profile and use local fixtures, including third-party frames and closed shadow roots. They do not establish a measured success rate across the live web.
 
-The ZIP is written to `dist/auto-reject-cookies-2.0.1.zip`. Packaging uses an explicit allowlist, so tests, development dependencies, and local files are excluded. GitHub Actions runs validation, tests, and packaging and makes the ZIP available as a workflow artifact.
+The ZIP is written to `dist/auto-reject-cookies-2.1.0.zip`. Packaging uses an explicit allowlist, so tests, development dependencies, and local files are excluded. GitHub Actions runs validation, tests, and packaging and makes the ZIP available as a workflow artifact.
 
 To contribute a missed banner, include the public URL, browser version, consent language, and which controls are offered. Redact personal information. Add a regression fixture with any new rule, verify its actual reject semantics against provider documentation or source, and retain the guards against accidental acceptance.
